@@ -1,0 +1,25 @@
+{
+  "devices": [
+    {
+      "deviceID": "tally",
+      "class": "avx-tally.TallyController",
+      "options": {
+        "devices": [
+          {
+            "deviceID": "Camera4Tally",
+            "tallyInput": 9,
+            "methods": {
+              "standby": "tallyStandby",
+              "live": "tallyLive",
+              "off": "tallyOff"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "deviceID": "Camera4Tally",
+      "class": "avx-tally.TallyLogger"
+    }
+  ]
+}
