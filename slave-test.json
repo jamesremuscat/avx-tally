@@ -1,0 +1,9 @@
+{
+  "controllerID": "Camera4TallyControl",
+  "devices": [
+    {
+      "deviceID": "Camera4Tally",
+      "class": "avx-tally.blinkt.BlinktTally"
+    }
+  ]
+}

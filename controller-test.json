@@ -13,13 +13,22 @@
               "live": "tallyLive",
               "off": "tallyOff"
             }
+          },
+          {
+            "deviceID": "TallyLog",
+            "tallyInput": 9
           }
         ]
       }
     },
     {
-      "deviceID": "Camera4Tally",
+      "deviceID": "TallyLog",
       "class": "avx-tally.TallyLogger"
     }
-  ]
+  ],
+  "options": {
+    "slaves": [
+      "Camera4TallyControl"
+    ]
+  }
 }

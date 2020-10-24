@@ -1,3 +1,4 @@
+from avx.controller.Controller import DeviceProxy
 from avx.devices import Device
 from avx.devices.net.atem.constants import MessageTypes, VideoSource
 from enum import Enum
@@ -42,9 +43,8 @@ class TallyController(Device):
                     else:
                         method = device['methods'].get('off')
 
-                    actual_device = self._controller.getDevice(device['deviceID'])
-                    if hasattr(actual_device, method):
-                        getattr(actual_device, method)()
+                    actual_device = DeviceProxy(self._controller, device['deviceID'])
+                    getattr(actual_device, method)()
 
 
 class TallyLogger(Device):
