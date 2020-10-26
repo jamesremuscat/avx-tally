@@ -16,6 +16,15 @@ DEVICE_DEFAULT_METHODS = {
 }
 
 
+def _get_tally_method(device, program, preview):
+    if program:
+        return device['methods'].get('live')
+    elif preview:
+        return device['methods'].get('standby')
+    else:
+        return device['methods'].get('off')
+
+
 class TallyController(Device):
     def __init__(self, deviceID, controller=None, **options):
         super(TallyController, self).__init__(deviceID, controller=controller, **options)
@@ -35,14 +44,11 @@ class TallyController(Device):
             for device in self._options.get('devices', []):
                 if device.get('tallyInputSource') in payload:
                     tally = payload[device['tallyInputSource']]
-                    method = None
-                    if tally.get('pgm', False):
-                        method = device['methods'].get('live')
-                    elif tally.get('prv', False):
-                        method = device['methods'].get('standby')
-                    else:
-                        method = device['methods'].get('off')
-
+                    method = _get_tally_method(
+                        device,
+                        tally.get('pgm', False),
+                        tally.get('prv', False)
+                    )
                     actual_device = DeviceProxy(self._controller, device['deviceID'])
                     getattr(actual_device, method)()
 
