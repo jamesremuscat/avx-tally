@@ -3,7 +3,7 @@
   "devices": [
     {
       "deviceID": "Camera4Tally",
-      "class": "avx-tally.blinkt.BlinktTally"
+      "class": "avx_tally.blinkt.BlinktTally"
     }
   ]
 }

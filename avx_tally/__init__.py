@@ -16,13 +16,28 @@ DEVICE_DEFAULT_METHODS = {
 }
 
 
+class TallyState(Enum):
+    STANDBY = 'standby'
+    LIVE = 'live'
+    OFF = 'off'
+
+    @staticmethod
+    def get(program, preview):
+        if program:
+            return TallyState.LIVE
+        elif preview:
+            return TallyState.STANDBY
+        else:
+            return TallyState.OFF
+
+
+CONTROLLED_TALLY_MESSAGE = 'avx-tally.ControlledTally'
+
+
 def _get_tally_method(device, program, preview):
-    if program:
-        return device['methods'].get('live')
-    elif preview:
-        return device['methods'].get('standby')
-    else:
-        return device['methods'].get('off')
+    tallyState = TallyState.get(program, preview)
+
+    return device['methods'].get(tallyState.value)
 
 
 class TallyController(Device):
@@ -51,6 +66,14 @@ class TallyController(Device):
                     )
                     actual_device = DeviceProxy(self._controller, device['deviceID'])
                     getattr(actual_device, method)()
+
+            controlled_tally_message = {}
+            for source, tally in payload.iteritems():
+                controlled_tally_message[source.value] = TallyState.get(
+                    tally.get('pgm', False),
+                    tally.get('prv', False)
+                )
+            self.broadcast(CONTROLLED_TALLY_MESSAGE, controlled_tally_message)
 
 
 class TallyLogger(Device):
