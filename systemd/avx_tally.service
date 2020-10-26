@@ -1,0 +1,13 @@
+[Unit]
+Description=avx controller
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Environment=CONTROLLER=''
+Environment=BRIGHTNESS=0.5
+Environment=TALLY_INPUT=9
+ExecStart=/home/pi/workspace/venv/bin/python2 -m avx_tally.blinkt -c ${CONTROLLER} -b ${BRIGHTNESS} -t ${TALLY_INPUT}
+
+[Install]
+WantedBy=multi-user.target

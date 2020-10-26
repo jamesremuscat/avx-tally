@@ -1,0 +1,12 @@
+[Unit]
+Description=Show pre-loading LED indicator
+Before=basic.target
+After=local-fs.target sysinit.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/home/pi/workspace/venv/bin/python2 -c "import blinkt; blinkt.set_clear_on_exit(False); blinkt.set_pixel(7, 255,128,0,0.05); blinkt.show()"
+
+[Install]
+WantedBy=basic.target
