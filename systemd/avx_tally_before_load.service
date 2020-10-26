@@ -2,6 +2,7 @@
 Description=Show pre-loading LED indicator
 Before=basic.target
 After=local-fs.target sysinit.target
+Wants=local-fs.target sysinit.target
 DefaultDependencies=no
 
 [Service]
