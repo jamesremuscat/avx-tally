@@ -80,7 +80,7 @@ if __name__ == '__main__':
     try:
         while True:
             time.sleep(0.5)
-    except Exception:
-        pass
+    except BaseException as e:
+        print 'Swallowed up an exception'
 
     controller.unregisterClient(client.uri)
