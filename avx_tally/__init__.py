@@ -4,9 +4,15 @@ from avx.devices.net.atem.constants import MessageTypes, VideoSource
 from enum import Enum
 
 
+class TallyControlMode(Enum):
+    DISABLED = 0
+    ENABLED = 1
+
+
 DEFAULT_OPTIONS = {
     'tallyMessageType': MessageTypes.TALLY,
-    'devices': []
+    'devices': [],
+    'initialMode': TallyControlMode.DISABLED.value
 }
 
 DEVICE_DEFAULT_METHODS = {
@@ -32,6 +38,7 @@ class TallyState(Enum):
 
 
 CONTROLLED_TALLY_MESSAGE = 'avx-tally.ControlledTally'
+TALLY_CONTROL_MODE_UPDATE = 'avx-tally.TallyControlModeUpdate'
 
 
 def _get_tally_method(device, program, preview):
@@ -54,26 +61,53 @@ class TallyController(Device):
             methods.update(device.get('methods', {}))
             device['methods'] = methods
 
+            self._mode = TallyControlMode(
+                self._options.get('initialMode', TallyControlMode.DISABLED.value)
+            )
+
+        self._previous_message = {}
+
+    def initialise(self):
+        super(TallyController, self).initialise()
+        self.broadcast(TALLY_CONTROL_MODE_UPDATE, self._mode.value)
+
+    def setMode(self, mode):
+        if isinstance(mode, TallyControlMode):
+            self._mode = mode
+            self.broadcast(TALLY_CONTROL_MODE_UPDATE, self._mode.value)
+            self.receiveMessage(
+                self._options['tallyMessageType'],
+                self.deviceID,
+                self._previous_message
+            )
+        else:
+            raise Exception('Invalid control mode: {}'.format(mode))
+
     def receiveMessage(self, messageType, sender, payload):
         if messageType == self._options['tallyMessageType']:
             for device in self._options.get('devices', []):
-                if device.get('tallyInputSource') in payload:
-                    tally = payload[device['tallyInputSource']]
-                    method = _get_tally_method(
-                        device,
-                        tally.get('pgm', False),
-                        tally.get('prv', False)
-                    )
-                    actual_device = DeviceProxy(self._controller, device['deviceID'])
-                    getattr(actual_device, method)()
+                if self._mode == TallyControlMode.DISABLED:
+                    tally = {}
+                else:
+                    tally = payload.get(device['tallyInputSource'], {})
 
-            controlled_tally_message = {}
-            for source, tally in payload.iteritems():
-                controlled_tally_message[source.value] = TallyState.get(
+                method = _get_tally_method(
+                    device,
                     tally.get('pgm', False),
                     tally.get('prv', False)
                 )
+                actual_device = DeviceProxy(self._controller, device['deviceID'])
+                getattr(actual_device, method)()
+
+            controlled_tally_message = {}
+            if self._mode != TallyControlMode.DISABLED:
+                for source, tally in payload.iteritems():
+                    controlled_tally_message[source.value] = TallyState.get(
+                        tally.get('pgm', False),
+                        tally.get('prv', False)
+                    )
             self.broadcast(CONTROLLED_TALLY_MESSAGE, controlled_tally_message)
+            self._previous_message = payload
 
 
 class TallyLogger(Device):
