@@ -74,12 +74,13 @@ if __name__ == '__main__':
     client.setDaemon(True)
     client.start()
     client.started.wait()
-    atexit.register(lambda: controller.unregisterClient(client.uri))
 
     controller.registerClient(client.uri)
 
     try:
         while True:
             time.sleep(0.5)
-    except KeyboardInterrupt:
+    except Exception:
         pass
+
+    controller.unregisterClient(client.uri)
