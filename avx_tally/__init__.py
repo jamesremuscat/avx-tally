@@ -89,7 +89,9 @@ class TallyController(Device):
                 if self._mode == TallyControlMode.DISABLED:
                     tally = {}
                 else:
-                    tally = payload.get(device['tallyInputSource'], {})
+                    if 'tallyInputSource' not in device:
+                        print device
+                    tally = payload.get(device.get('tallyInputSource'), {})
 
                 method = _get_tally_method(
                     device,
