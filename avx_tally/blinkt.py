@@ -40,7 +40,7 @@ class BlinktTallyClient(Client):
     def handleMessage(self, msgType, source, payload):
         if msgType == CONTROLLED_TALLY_MESSAGE:
             if self._tally_input in payload:
-                method = DEVICE_DEFAULT_METHODS[payload[self._tally_input].value]
+                method = DEVICE_DEFAULT_METHODS[payload[self._tally_input]]
                 getattr(self._device, method)()
             else:
                 self._device.tallyOff()

@@ -107,7 +107,7 @@ class TallyController(Device):
                     controlled_tally_message[source.value] = TallyState.get(
                         tally.get('pgm', False),
                         tally.get('prv', False)
-                    )
+                    ).value
             self.broadcast(CONTROLLED_TALLY_MESSAGE, controlled_tally_message)
             self._previous_message = payload
 
