@@ -10,7 +10,7 @@ setup(
     author='James Muscat',
     author_email='jamesremuscat@gmail.com',
     url='https://github.com/jamesremuscat/avx-tally',
-    packages=['avx-tally'],
+    packages=['avx_tally'],
     install_requires=["avx>1.3.1", "enum34"],
     extras_require={
         "blinkt": ['blinkt']
