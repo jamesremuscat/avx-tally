@@ -71,21 +71,4 @@ if __name__ == '__main__':
 
     controller = Controller.fromPyro(args.controller)
     client = BlinktTallyClient(args.tally, args.brightness)
-    client.setDaemon(True)
-    client.start()
-    client.started.wait()
-
-    controller.registerClient(client.uri)
-
-    itercount = 0
-    try:
-        while True:
-            time.sleep(0.5)
-            itercount += 1
-            if itercount == 120:
-                controller.registerClient(client.uri)
-                itercount = 0
-    except BaseException as e:
-        print 'Swallowed up an exception'
-
-    controller.unregisterClient(client.uri)
+    client.run()
