@@ -99,7 +99,13 @@ class TallyController(Device):
                     tally.get('prv', False)
                 )
                 actual_device = DeviceProxy(self._controller, device['deviceID'])
-                getattr(actual_device, method)()
+                try:
+                    getattr(actual_device, method)()
+                except Exception:
+                    pass  # I guess they don't want to know...
+                    # More usefully: this could be a device that has gone
+                    # away, been switched off, etc - we should try it
+                    # again next time, so nothing more to do here.
 
             controlled_tally_message = {}
             if self._mode != TallyControlMode.DISABLED:
